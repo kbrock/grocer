@@ -1,8 +1,9 @@
 # Grocer
 
-[![Build Status](https://api.travis-ci.org/grocer/grocer.png?branch=master)](https://travis-ci.org/grocer/grocer)
-[![Dependency Status](https://gemnasium.com/grocer/grocer.png)](https://gemnasium.com/grocer/grocer)
-[![Code Climate](https://codeclimate.com/github/grocer/grocer.png)](https://codeclimate.com/github/grocer/grocer)
+[![Gem Version](http://img.shields.io/gem/v/grocer.svg)](https://rubygems.org/gems/grocer)
+[![Code Climate](http://img.shields.io/codeclimate/github/grocer/grocer.svg)](https://codeclimate.com/github/grocer/grocer)
+[![Build Status](https://img.shields.io/travis/grocer/grocer.svg)](https://travis-ci.org/grocer/grocer)
+[![Dependency Status](https://img.shields.io/gemnasium/grocer/grocer.svg)](https://gemnasium.com/grocer/grocer)
 
 **grocer** interfaces with the [Apple Push Notification
 Service](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ApplePushService/ApplePushService.html)
@@ -13,7 +14,7 @@ cleanest, most extensible, and friendliest.
 
 ## Requirements
 
-* Ruby/MRI 1.9.x, JRuby 1.7.x in 1.9 mode, Rubinius in 1.9 mode
+* Ruby/MRI 2.1, 2.0, 1.9.x, JRuby 1.7.x in 1.9 mode, Rubinius in 1.9 mode
 
 ## Installation
 
@@ -69,12 +70,14 @@ pusher = Grocer.pusher(
 #
 # Information on obtaining `device_token` is shown later.
 notification = Grocer::Notification.new(
-  device_token: "fe15a27d5df3c34778defb1f4f3880265cc52c0c047682223be59fb68500a9a2",
-  alert:        "Hello from Grocer!",
-  badge:        42,
-  sound:        "siren.aiff",         # optional
-  expiry:       Time.now + 60*60,     # optional; 0 is default, meaning the message is not stored
-  identifier:   1234                  # optional
+  device_token:      "fe15a27d5df3c34778defb1f4f3880265cc52c0c047682223be59fb68500a9a2",
+  alert:             "Hello from Grocer!",
+  badge:             42,
+  category:          "a category",         # optional; used for custom notification actions
+  sound:             "siren.aiff",         # optional
+  expiry:            Time.now + 60*60,     # optional; 0 is default, meaning the message is not stored
+  identifier:        1234,                 # optional; must be an integer
+  content_available: true                  # optional; any truthy value will set 'content-available' to 1
 )
 
 pusher.push(notification)
@@ -124,15 +127,48 @@ notification = Grocer::PassbookNotification.new(device_token: "...")
 
 #### Newsstand Notifications
 
-Grocer also supports the special Newsstand 'content-available' notification. `Grocer::NewsstandNotification` can be
-used for this. Like `Grocer::PassbookNotification`, it is a specialized kind of notification which does not require
-any payload. Likewise, anything you add to it will be ignored.
+Grocer also supports the special Newsstand 'content-available' notification.
+`Grocer::NewsstandNotification` can be used for this. Like
+`Grocer::PassbookNotification`, it is a specialized kind of notification which
+does not require any payload. Likewise, anything you add to it will be ignored.
 
 ```ruby
 notification = Grocer::NewsstandNotification.new(device_token: "...")
 # Generates a JSON payload like:
 # {"aps": {"content-available":1}}
 ````
+
+#### Safari Notifications
+
+Grocer can be used for [Safari Push
+Notifications](https://developer.apple.com/notifications/safari-push-notifications/)
+introduced in Mavericks.
+
+```ruby
+notification = Grocer::SafariNotification.new(
+  device_token: '...',        # required
+  title: 'Hello from Grocer', # required
+  body: 'Hi',                 # required
+  action: 'Read',             # optional; the label of the action button
+  url_args: ['arg1']          # required (array); values that are paired with the placeholders inside the urlFormatString.
+                              # Apple's documention lists url-args as optional, but in testing it was found to be required
+)
+```
+
+Generates a JSON payload like:
+
+```json
+{
+  "aps": {
+    "alert": {
+      "title": "Hello from Grocer",
+      "body": "Hi",
+      "action": "Read"
+    },
+    "url-args": [ "arg1" ]
+  }
+}
+```
 
 ### Feedback
 
@@ -143,7 +179,7 @@ feedback = Grocer.feedback(
   certificate: "/path/to/cert.pem",       # required
   passphrase:  "",                        # optional
   gateway:     "feedback.push.apple.com", # optional; See note below.
-  port:        2196                       # optional
+  port:        2196,                      # optional
   retries:     3                          # optional
 )
 

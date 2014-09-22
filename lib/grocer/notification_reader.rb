@@ -30,10 +30,19 @@ module Grocer
       payload_length = @io.read(2).unpack("n").first
       payload_hash = JSON.parse(@io.read(payload_length), symbolize_names: true)
 
-      payload.merge!(payload_hash.delete(:aps) || { })
+      aps = sanitize_keys(payload_hash.delete(:aps))
+      payload.merge!(aps)
+
       payload[:custom] = payload_hash
 
       Grocer::Notification.new(payload)
+    end
+
+    def sanitize_keys(hash)
+      hash.each_with_object({}) do |(k,v), h|
+        new_key = k.to_s.gsub(/-/,'_').to_sym
+        h[new_key] = v
+      end
     end
   end
 end

@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## Unreleased
+
+## 0.6.0
+
+* Add `category` option for custom notification actions. ([Michel
+  Billard](https://github.com/mbillard))
+
+## 0.5.0
+
+* Add `Grocer::SafariNotification` for sending Safari notifications in OS X
+  Mavericks. ([Ben Ubois](https://github.com/benubois) and [Adam
+  Duke](https://github.com/adamvduke))
+
+## 0.4.1
+
+* Fix `Grocer::NotificationReader`, ensuring it sanitizes incoming `aps`
+  payload keys before building a new `Grocer::Notification`.
+
+## 0.4.0
+
+* Add support for `content-available` for background fetches (iOS 7) for all
+  types of Notifications ([Zack Parker](https://github.com/somezack))
+
 ## 0.3.4
 
 * Add `Grocer::MobileDeviceManagementNotification` to send PushMagic tokens.

@@ -19,14 +19,13 @@ Gem::Specification.new do |gem|
   gem.homepage      = 'https://github.com/grocer/grocer'
   gem.license       = 'MIT'
 
-  gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = "grocer"
   gem.require_paths = ["lib"]
   gem.version       = Grocer::VERSION
 
-  gem.add_development_dependency 'rspec', '~> 2.11'
+  gem.add_development_dependency 'rspec', '~> 3.0.0.rc1'
   gem.add_development_dependency 'pry', '~> 0.9.8'
   gem.add_development_dependency 'mocha'
   gem.add_development_dependency 'bourne'
